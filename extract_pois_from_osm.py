@@ -43,6 +43,8 @@ ox.config(use_cache=False, log_console=False)
 # Bounding box (https://bboxfinder.com/)
 west, south, east, north = 38.639904,8.8331149,38.9080529,9.0985761 # Addis (38.639904,8.8331149,38.9080529,9.0985761)
 
+# Typical tags to get workplaces
+
 # tags = {
 #     "building": ["industrial", "office"],
 #     "company": True,
@@ -66,6 +68,8 @@ west, south, east, north = 38.639904,8.8331149,38.9080529,9.0985761 # Addis (38.
 #         "logistics_centre"         # Warehouses and logistics centers
 #     ]
 # }
+
+# Typical tags to get other points of interest
 
 tags = {
     "amenity": [
