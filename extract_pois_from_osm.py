@@ -38,75 +38,76 @@ import osmnx as ox
 #################### PARAMETERS ####################
  
 # No cache and no log
-ox.config(use_cache=False, log_console=False)
+ox.settings.use_cache = False
+ox.settings.log_console = False
 
 # Bounding box (https://bboxfinder.com/)
-west, south, east, north = 38.639904,8.8331149,38.9080529,9.0985761 # Addis (38.639904,8.8331149,38.9080529,9.0985761)
+west, south, east, north = 38.639904, 8.8331149, 38.9080529, 9.0985761 
 
 # Typical tags to get workplaces
 
-# tags = {
-#     "building": ["industrial", "office"],
-#     "company": True,
-#     "landuse": ["industrial", "commercial", "retail"],
-#     "industrial": True,
-#     "office": True,
-#     "amenity": [
-#         "university",             # Large universities often have many staff members
-#         "research_institute",      # Research institutes tend to have a substantial workforce
-#         "hospital",                # Hospitals have a high number of employees
-#         "townhall",                # Municipal buildings with a large staff
-#         "conference_centre",       # May employ a large number of service staff
-#         "factory",                 # Industrial sites with large staff numbers
-#         "corporate_office",        # Corporate offices tend to have large workforces
-#         "government",              # Government offices
-#         "bank",                    # Larger banks can have many employees
-#         "police",                  # Police stations with a substantial workforce
-#         "fire_station",            # Fire stations in large cities may have multiple shifts
-#         "post_office",             # Post offices can have a significant number of employees
-#         "call_centre",             # High-density work environments
-#         "logistics_centre"         # Warehouses and logistics centers
-#     ]
-# }
-
-# Typical tags to get other points of interest
-
 tags = {
+    "building": ["industrial", "office"],
+    "company": True,
+    "landuse": ["industrial", "commercial", "retail"],
+    "industrial": True,
+    "office": True,
     "amenity": [
-        # Transport-related amenities
-        "fuel", "parking", "parking_entrance", "bicycle_parking",
-        
-        # Education-related amenities
-        "college", "university", "school", "kindergarten", "library", "music_school", "language_school",
-        
-        # Health-related amenities
-        "clinic", "dentist", "doctors", "hospital", "pharmacy", "veterinary",
-        
-        # Food and drink
-        "cafe", "ice_cream", "internet_cafe", "restaurant", "fast_food", "bar", "pub", "biergarten",
-        
-        # Entertainment and leisure
-        "theatre", "cinema", "music_venue", "nightclub", "casino", "gambling", "stripclub",
-        
-        # Cultural and community centers
-        "arts_centre", "community_centre", "social_centre", "exhibition_centre",        
-    
-        # Tourism-related amenities
-        "attraction", "viewpoint", "aquarium", "beach_resort", "gallery", "museum", "theme_park", "zoo", "artwork"
-    ],
-    "shop": [
-        "supermarket", "mall", "department_store", "convenience"
-    ],
-    "tourism": [
-        "hotel", "guest_house", "hostel", "motel", "camp_site", "apartment"
-    ],
-    "leisure": [
-        "stadium", "sports_centre", "swimming_pool", "fitness_centre"
+        "university",             # Large universities often have many staff members
+        "research_institute",      # Research institutes tend to have a substantial workforce
+        "hospital",                # Hospitals have a high number of employees
+        "townhall",                # Municipal buildings with a large staff
+        "conference_centre",       # May employ a large number of service staff
+        "factory",                 # Industrial sites with large staff numbers
+        "corporate_office",        # Corporate offices tend to have large workforces
+        "government",              # Government offices
+        "bank",                    # Larger banks can have many employees
+        "police",                  # Police stations with a substantial workforce
+        "fire_station",            # Fire stations in large cities may have multiple shifts
+        "post_office",             # Post offices can have a significant number of employees
+        "call_centre",             # High-density work environments
+        "logistics_centre"         # Warehouses and logistics centers
     ]
 }
 
+# Typical tags to get other points of interest
+
+# tags = {
+#     "amenity": [
+#         # Transport-related amenities
+#         "fuel", "parking", "parking_entrance", "bicycle_parking",
+        
+#         # Education-related amenities
+#         "college", "university", "school", "kindergarten", "library", "music_school", "language_school",
+        
+#         # Health-related amenities
+#         "clinic", "dentist", "doctors", "hospital", "pharmacy", "veterinary",
+        
+#         # Food and drink
+#         "cafe", "ice_cream", "internet_cafe", "restaurant", "fast_food", "bar", "pub", "biergarten",
+        
+#         # Entertainment and leisure
+#         "theatre", "cinema", "music_venue", "nightclub", "casino", "gambling", "stripclub",
+        
+#         # Cultural and community centers
+#         "arts_centre", "community_centre", "social_centre", "exhibition_centre",        
+    
+#         # Tourism-related amenities
+#         "attraction", "viewpoint", "aquarium", "beach_resort", "gallery", "museum", "theme_park", "zoo", "artwork"
+#     ],
+#     "shop": [
+#         "supermarket", "mall", "department_store", "convenience"
+#     ],
+#     "tourism": [
+#         "hotel", "guest_house", "hostel", "motel", "camp_site", "apartment"
+#     ],
+#     "leisure": [
+#         "stadium", "sports_centre", "swimming_pool", "fitness_centre"
+#     ]
+# }
+
 # Define the number of rows and columns for the grid
-n_rows, n_cols = 1, 1  # Adjust these values to control the size of the chunks
+n_rows, n_cols = 3, 3  # Adjust these values to control the size of the chunks
 
 print(f"INFO \t Getting the destinations from OSM. Tags: {tags}")
 
@@ -129,7 +130,7 @@ for i in range(n_rows):
         east_j = west + (j + 1) * lon_step
 
         # Add the bounding box to the list
-        bbox_list.append([north_i, south_i, east_j, west_j])
+        bbox_list.append([west_j, south_i, east_j, north_i])  
 
 # Initialize a list to store all POIs
 all_pois = []
@@ -143,18 +144,18 @@ for idx, bbox in enumerate(bbox_list):
     try:
         # Fetch the data for the current bounding box
         pois = ox.features.features_from_bbox(bbox=bbox, tags=tags)        
-       	all_pois.append(pois)
+        all_pois.append(pois)
 
-       	# Convert ways into nodes and get the coordinates of the center point - Do not store the relations
+        # Convert ways into nodes and get the coordinates of the center point - Do not store the relations
         for index, row in pois.iterrows():
-        	if index[0] == 'way':
-        		shapefile = row['geometry']
-        		center_point = shapefile.centroid
-        		center_points.append((center_point.x, center_point.y))
-        	if index[0] == 'node':
-        		center_points.append((row['geometry'].x, row['geometry'].y))
-        	else:
-        		break
+            if index[0] == 'way':
+                shapefile = row['geometry']
+                center_point = shapefile.centroid
+                center_points.append((center_point.x, center_point.y))
+            if index[0] == 'node':
+                center_points.append((row['geometry'].x, row['geometry'].y))
+            else:
+                break
 
         print(f"Completed fetching data for bbox {bbox}.")
         time.sleep(1)  # Optional: Add delay to avoid overloading the server
@@ -200,7 +201,7 @@ csv_data = [{"name": f"id_{index+1}", "latitude": lat, "longitude": lon, "weight
 df = pd.DataFrame(csv_data)
 
 # Save the DataFrame to a CSV file
-df.to_csv("center_points.csv", index=False)
+df.to_csv("AddisAbaba_list.csv", index=False)
 
 print("Data saved")
 
